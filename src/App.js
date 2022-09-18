@@ -1,23 +1,69 @@
-import logo from './logo.svg';
-import './App.css';
+import { Container, Grid } from "@mui/material";
+import { useEffect } from "react";
+import { useState } from "react";
+import "./App.css";
+import Form from "./Todoapp/Form";
+import Todolist from "./Todoapp/Todolist";
+
 
 function App() {
+
+  const [inputText, setInputText] = useState("");
+  const [status, setStatus] = useState('All');
+  const [filterredTodo, setFilterredTodo] = useState([]);
+
+  
+ const innerTodos = localStorage.getItem('todos')
+ ? JSON.parse(localStorage.getItem('todos')) : [];
+
+ 
+  const [todos, setTodos] = useState(innerTodos);
+
+
+  useEffect(() => {
+   
+
+    const filterHandler = () => {
+    switch (status) {
+      case 'completed':
+        setFilterredTodo(todos.filter(todo => todo.completed === true))
+        break;
+
+        case 'uncompleted':
+        setFilterredTodo(todos.filter(todo => todo.completed === false))
+         break;
+    
+      default:
+        setFilterredTodo(todos);
+        break;
+    }
+  };
+
+   filterHandler();
+
+
+
+    localStorage.setItem("todos", JSON.stringify(todos));
+  
+   
+  }, [todos, status]);
+
+
+  
+     
+  
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Grid container>
+        <Container>
+          <header>
+            <h1>My Todo List</h1>
+          </header>
+          <Form setStatus={setStatus} todos={todos} inputText={inputText} setTodos={setTodos} setInputText={setInputText} />
+          <Todolist filterredTodo={filterredTodo} setTodos={setTodos}  todos={todos} />
+        </Container>
+      </Grid>
     </div>
   );
 }
